@@ -1,0 +1,30 @@
+ALEX MERCER
+San Francisco, CA | 415-555-0199 | alex.mercer@email.com | linkedin.com/in/alexmercer
+
+PROFESSIONAL SUMMARY
+Highly analytical Software Engineer with over 4 years of experience building high-performance web systems and full-stack solutions. Specialist in Python, JavaScript, and cloud architectures with a dedication to writing readable, robust codebase modules.
+
+SKILLS
+- Programming: Python, JavaScript, TypeScript, Go, SQL
+- Frameworks: FastAPI, React, Node.js, Next.js, Express
+- Cloud & DevOps: AWS (S3, EC2, Lambda), Docker, Git, CI/CD pipelines
+
+EXPERIENCE
+Software Engineer | TechNova Solutions
+June 2022 - Present | San Francisco, CA
+- Directed migration of legacy monolithic architectures to a serverless FastAPI backend, reducing page response times by 35%.
+- Implemented state-of-the-art data pipelines processing 2M+ data records daily using Go and SQLite.
+- Mentored 4 junior engineers on software testing principles and clean code styling guidelines.
+
+Junior Full-Stack Engineer | WebStart Ventures
+September 2020 - May 2022 | Austin, TX
+- Maintained core React frontend components, increasing visual rendering performance.
+- Built responsive REST APIs inside Node.js handling secure customer invoice and transaction records.
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of California, Berkeley | 2016 - 2020
+
+CERTIFICATIONS
+- AWS Certified Developer Associate (2025)
+- Certified Kubernetes Administrator (CKA, 2024)

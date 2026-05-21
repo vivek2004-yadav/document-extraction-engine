@@ -1,0 +1,33 @@
+# --- Python Version Control ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+backend/.env
+
+# --- SQLite Database ---
+backend/extractions.db
+extractions.db
+*.db
+
+# --- Node / React Frontend ---
+frontend/node_modules/
+node_modules/
+frontend/dist/
+dist/
+.eslintcache
+
+# --- OS & IDE Files ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
