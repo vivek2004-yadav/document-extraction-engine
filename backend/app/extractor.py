@@ -6,11 +6,9 @@ from pydantic import BaseModel
 
 from backend.app.schemas import InvoiceSchema, ResumeSchema, ContractSchema
 
-# Providers & default models
 GEMINI_DEFAULT_MODEL = "gemini-2.5-flash"
 OPENAI_DEFAULT_MODEL = "gpt-4o-mini"
 
-# Schema mapping
 SCHEMA_MAP: Dict[str, Type[BaseModel]] = {
     "invoice": InvoiceSchema,
     "resume": ResumeSchema,
@@ -31,11 +29,6 @@ def extract_structured_data(
     api_provider: Optional[str] = None,
     api_key: Optional[str] = None
 ) -> Dict[str, Any]:
-    """
-    Orchestrates the structured document extraction using either Google Gemini or OpenAI.
-    Supports native PDF/image multimodal parsing when file bytes are provided.
-    """
-    # 1. Resolve credentials and provider
     provider = (api_provider or os.getenv("API_PROVIDER", "gemini")).lower()
     key = api_key or os.getenv("GEMINI_API_KEY" if provider == "gemini" else "OPENAI_API_KEY")
     
@@ -43,8 +36,6 @@ def extract_structured_data(
         raise ValueError(f"API Key for provider '{provider}' is missing. Please configure it in your settings.")
         
     schema_class = get_schema_class(doc_type)
-    
-    # 2. System and User Prompt Construction
     system_instruction = (
         "You are an expert unstructured-to-structured document extraction engine. "
         "Your task is to parse the uploaded document and return a fully populated JSON structure matching the requested schema.\n\n"
@@ -70,7 +61,6 @@ def extract_structured_data(
     Analyze structural details, tables, dates, names, and key metrics. Return the extracted data in strict JSON conforming to the requested schema.
     """
 
-    # 3. Call selected LLM Provider
     if provider == "gemini":
         return _extract_with_gemini(system_instruction, user_prompt, schema_class, key, file_bytes, file_mime)
     elif provider == "openai":
@@ -86,7 +76,6 @@ def _extract_with_gemini(
     file_bytes: Optional[bytes] = None,
     file_mime: Optional[str] = None
 ) -> Dict[str, Any]:
-    """Uses the official google-genai client for structured output generation."""
     try:
         from google import genai
         from google.genai import types
@@ -97,9 +86,7 @@ def _extract_with_gemini(
     
     contents = []
     
-    # If we have file bytes and it's a PDF or image, we append the binary object for native vision processing!
     if file_bytes and file_mime:
-        # Standardize mime types if needed
         contents.append(
             types.Part.from_bytes(
                 data=file_bytes,
@@ -113,12 +100,11 @@ def _extract_with_gemini(
         system_instruction=system_instruction,
         response_mime_type="application/json",
         response_schema=schema_class,
-        temperature=0.1  # Low temperature for highly analytical/deterministic output
+        temperature=0.1
     )
     
     model = os.getenv("GEMINI_MODEL", GEMINI_DEFAULT_MODEL)
     
-    # Generate content
     response = client.models.generate_content(
         model=model,
         contents=contents,
@@ -129,7 +115,6 @@ def _extract_with_gemini(
         raise RuntimeError("Empty response received from Gemini API.")
         
     try:
-        # Gemini guarantees JSON response conforming to response_schema
         parsed_json = json.loads(response.text)
         return parsed_json
     except json.JSONDecodeError:
@@ -144,7 +129,6 @@ def _extract_with_openai(
     file_bytes: Optional[bytes] = None,
     file_mime: Optional[str] = None
 ) -> Dict[str, Any]:
-    """Uses the openai SDK's beta.chat.completions.parse structured output helper."""
     try:
         from openai import OpenAI
     except ImportError:
@@ -156,7 +140,6 @@ def _extract_with_openai(
         {"role": "system", "content": system_instruction}
     ]
     
-    # Build user message with vision capabilities if an image is provided
     if file_bytes and file_mime and file_mime.startswith("image/"):
         base64_image = base64.b64encode(file_bytes).decode("utf-8")
         image_url = f"data:{file_mime};base64,{base64_image}"
@@ -172,12 +155,9 @@ def _extract_with_openai(
         ]
         messages.append({"role": "user", "content": user_content})
     else:
-        # Standard text message
         messages.append({"role": "user", "content": user_prompt})
 
     model = os.getenv("OPENAI_MODEL", OPENAI_DEFAULT_MODEL)
-    
-    # Use OpenAI Structured Outputs API
     response = client.beta.chat.completions.parse(
         model=model,
         messages=messages,
@@ -189,5 +169,4 @@ def _extract_with_openai(
     if not parsed_model:
         raise RuntimeError("OpenAI failed to parse response into structural model.")
         
-    # Serialize back to standard python dict
     return parsed_model.model_dump()

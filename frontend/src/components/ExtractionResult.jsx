@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const ExtractionResult = ({ extraction, onSave }) => {
   const [editedData, setEditedData] = useState(null);
   const [isDirty, setIsDirty] = useState(false);
-  const [activeTab, setActiveTab] = useState('data'); // 'data' or 'raw_text'
+  const [activeTab, setActiveTab] = useState('data');
 
   useEffect(() => {
     if (extraction && extraction.extracted_data) {
@@ -66,7 +66,6 @@ const ExtractionResult = ({ extraction, onSave }) => {
     setIsDirty(false);
   };
 
-  // CSV Export Utility
   const handleExportCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Field,Value,Confidence,Note\n";
@@ -78,12 +77,10 @@ const ExtractionResult = ({ extraction, onSave }) => {
       
       if (Array.isArray(field.value)) {
         if (field.value.length > 0 && typeof field.value[0] === 'object') {
-          // Nested structures: convert objects into simplified inline strings
           val = '"' + field.value.map(obj => 
             Object.entries(obj).map(([sk, sv]) => `${sk}: ${sv}`).join(" | ")
           ).join("\n") + '"';
         } else {
-          // Flat list
           val = `"${field.value.join(", ")}"`;
         }
       } else {
@@ -105,7 +102,6 @@ const ExtractionResult = ({ extraction, onSave }) => {
     document.body.removeChild(link);
   };
 
-  // JSON Export Utility
   const handleExportJSON = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(editedData, null, 2));
     const link = document.createElement("a");
@@ -118,7 +114,6 @@ const ExtractionResult = ({ extraction, onSave }) => {
 
   return (
     <div className="results-layout">
-      {/* LEFT PANEL: Document Raw Text / Source Preview */}
       <div className="preview-panel">
         <div className="preview-header">
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -137,38 +132,37 @@ const ExtractionResult = ({ extraction, onSave }) => {
               Raw Extracted Text
             </button>
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
             {extraction.filename}
           </span>
         </div>
         
         {activeTab === 'data' ? (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)', padding: '40px', textAlign: 'center', background: 'rgba(0,0,0,0.15)' }}>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary)', marginBottom: '16px' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'var(--text-secondary)', padding: '40px', textAlign: 'center', background: '#fafafa' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary)', marginBottom: '12px' }}>
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
-            <h3 style={{ color: 'var(--text-primary)', marginBottom: '8px', fontSize: '16px' }}>Visual File Document Staged</h3>
-            <p style={{ fontSize: '13px', maxWidth: '300px', lineHeight: '1.5' }}>
-              LLM parsing completed successfully on the file structure using active AI schemas.
+            <h3 style={{ color: 'var(--text-primary)', marginBottom: '6px', fontSize: '14px', fontWeight: 600 }}>Document Processed</h3>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '280px', lineHeight: '1.5' }}>
+              Data fields have been extracted and mapped to the standard document format.
             </p>
           </div>
         ) : (
           <div className="preview-content">
-            {extraction.raw_text || "[No raw text extracted. Document was parsed directly using LLM multimodal vision tools.]"}
+            {extraction.raw_text || "[Document details parsed directly from file image.]"}
           </div>
         )}
       </div>
 
-      {/* RIGHT PANEL: Structured Extracted Fields Grid */}
       <div className="data-panel">
         <div className="data-header">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <span style={{ fontSize: '11px', color: 'var(--primary)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
-              Schema Editor
+            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>
+              Document Fields
             </span>
-            <h3 style={{ fontSize: '16px', fontWeight: 700 }}>
-              {extraction.document_type.toUpperCase()} Fields
+            <h3 style={{ fontSize: '14px', fontWeight: 600 }}>
+              {extraction.document_type.toUpperCase()}
             </h3>
           </div>
 
@@ -203,14 +197,12 @@ const ExtractionResult = ({ extraction, onSave }) => {
                 <div className="field-meta">
                   <span className="field-label">{key.replace(/_/g, " ")}</span>
                   <span className={`confidence-badge ${field.confidence || 'low'}`}>
-                    {field.confidence || 'low'} confidence
+                    {field.confidence === 'high' ? 'Verified' : field.confidence === 'medium' ? 'Review' : 'Unverified'}
                   </span>
                 </div>
 
-                {/* Case 1: Nested Structure Array (e.g. line items or experience) */}
                 {isNestedObjectArray ? (
                   <div style={{ marginTop: '6px' }}>
-                    {/* Render specific custom table headers depending on schema field */}
                     {key === 'line_items' && (
                       <div>
                         <div className="nested-item-row header">
@@ -324,7 +316,6 @@ const ExtractionResult = ({ extraction, onSave }) => {
                     )}
                   </div>
                 ) : isArray ? (
-                  /* Case 2: Flat List of strings (e.g. skills or certifications) */
                   <div className="field-input-wrapper">
                     <input 
                       type="text" 
@@ -335,7 +326,6 @@ const ExtractionResult = ({ extraction, onSave }) => {
                     />
                   </div>
                 ) : (
-                  /* Case 3: Flat Scalar Field (string or number) */
                   <div className="field-input-wrapper">
                     <input 
                       type={typeof field.value === 'number' ? 'number' : 'text'}

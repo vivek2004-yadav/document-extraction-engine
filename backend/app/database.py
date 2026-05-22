@@ -93,7 +93,6 @@ def update_extraction_data(extraction_id: int, updated_data: Dict[str, Any]) -> 
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Check if record exists
     cursor.execute("SELECT id FROM extractions WHERE id = ?", (extraction_id,))
     if not cursor.fetchone():
         conn.close()

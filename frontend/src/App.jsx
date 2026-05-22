@@ -14,13 +14,11 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState('');
   
-  // API credentials settings
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [apiProvider, setApiProvider] = useState(() => localStorage.getItem('ex_api_provider') || 'gemini');
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('ex_api_key') || '');
   const [isApiConfigured, setIsApiConfigured] = useState(false);
 
-  // Fetch history list on mount
   useEffect(() => {
     fetchHistory();
     checkApiConfiguration();
@@ -58,7 +56,7 @@ function App() {
 
   const handleUpload = async (file, docType) => {
     setIsProcessing(true);
-    setProcessingMessage('Analyzing document structure...');
+    setProcessingMessage('Loading document data...');
     setActiveId(null);
     setActiveExtraction(null);
 
@@ -66,7 +64,6 @@ function App() {
     formData.append('file', file);
     formData.append('document_type', docType);
     
-    // Pass user API keys if configured locally
     const storedProvider = localStorage.getItem('ex_api_provider');
     const storedKey = localStorage.getItem('ex_api_key');
     if (storedProvider && storedKey) {
@@ -75,8 +72,7 @@ function App() {
     }
 
     try {
-      // Simulating a minor delay to show structured micro-steps
-      setTimeout(() => setProcessingMessage('Extracting features using AI schemas...'), 1800);
+      setTimeout(() => setProcessingMessage('Parsing data fields...'), 1800);
       
       const res = await fetch(`${API_BASE}/api/extract`, {
         method: 'POST',
@@ -89,9 +85,9 @@ function App() {
         await loadExtraction(result.id);
       } else {
         const errData = await res.json();
-        const msg = errData.detail?.error || errData.detail?.message || "Structured extraction failed.";
+        const msg = errData.detail?.error || errData.detail?.message || "Data processing failed.";
         alert(`Error: ${msg}`);
-        await fetchHistory(); // Still fetch history to show the failed attempt
+        await fetchHistory();
       }
     } catch (e) {
       alert("Communication error with backend. Is the FastAPI server running?");
@@ -149,7 +145,6 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Sidebar: Past extractions */}
       <ExtractionsList 
         extractions={extractions}
         activeId={activeId}
@@ -157,22 +152,21 @@ function App() {
         onNewUpload={handleNewUpload}
       />
 
-      {/* Main workspace */}
       <div className="main-layout">
         <header className="top-nav">
           <div className="nav-left">
-            <h2>Document Extraction Workspace</h2>
+            <h2>Document Manager</h2>
           </div>
           <div className="nav-right">
             <button 
               className={`api-badge-button ${isApiConfigured ? 'configured' : ''}`}
               onClick={() => setIsConfigOpen(true)}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3" />
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
-              <span>{isApiConfigured ? 'Custom API Configured' : 'Configure LLM Key'}</span>
+              <span>{isApiConfigured ? 'Custom Credentials Active' : 'Configure Connection'}</span>
             </button>
           </div>
         </header>
@@ -194,42 +188,41 @@ function App() {
         </main>
       </div>
 
-      {/* Configuration Modal Overlay */}
       {isConfigOpen && (
         <div className="api-config-overlay">
           <div className="api-config-modal">
             <button className="modal-close" onClick={() => setIsConfigOpen(false)}>×</button>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 800 }}>LLM Settings</h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                Configure a custom API key for document parsing. If left blank, the engine uses backend configuration values.
+              <h2 style={{ fontSize: '16px', fontWeight: 600 }}>Connection Settings</h2>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                Configure active connection credentials for data processing. If left blank, the server uses defaults.
               </p>
             </div>
 
             <div className="api-form-group">
-              <label>API Provider</label>
+              <label>Provider Type</label>
               <select 
                 className="api-select"
                 value={apiProvider}
                 onChange={(e) => setApiProvider(e.target.value)}
               >
-                <option value="gemini">Google Gemini (Recommended)</option>
-                <option value="openai">OpenAI</option>
+                <option value="gemini">Default Provider (Gemini)</option>
+                <option value="openai">Secondary Provider (OpenAI)</option>
               </select>
             </div>
 
             <div className="api-form-group">
-              <label>API Access Key</label>
+              <label>Access Token</label>
               <input 
                 type="password"
                 className="api-input"
-                placeholder={apiProvider === 'gemini' ? 'AIzaSy...' : 'sk-...'}
+                placeholder={apiProvider === 'gemini' ? 'Enter key...' : 'Enter key...'}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
               <button 
                 className="btn-secondary" 
                 style={{ flex: 1, color: 'var(--conf-low)', borderColor: 'rgba(239, 68, 68, 0.15)' }} 

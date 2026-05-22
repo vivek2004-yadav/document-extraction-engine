@@ -8,14 +8,12 @@ class ExtractedField(BaseModel, Generic[T]):
     confidence: str = Field(..., description="Confidence flag for this field. Must be 'high', 'medium', or 'low'.")
     note: Optional[str] = Field(default=None, description="A note describing where the field was found, or why it is null (e.g. 'Field not found in text'). Absolutely no hallucinations.")
 
-# --- Invoice Schema Sub-components ---
 class InvoiceLineItem(BaseModel):
     description: Optional[str] = Field(default=None, description="Description of the item or service.")
     quantity: Optional[int] = Field(default=None, description="Quantity of items.")
     unit_price: Optional[float] = Field(default=None, description="Unit price of the item.")
     amount: Optional[float] = Field(default=None, description="Total amount for this line item (qty * unit price).")
 
-# --- Resume Schema Sub-components ---
 class ResumeExperienceItem(BaseModel):
     job_title: Optional[str] = Field(default=None, description="Job title or role.")
     company: Optional[str] = Field(default=None, description="Company or organization name.")
@@ -26,8 +24,6 @@ class ResumeEducationItem(BaseModel):
     degree: Optional[str] = Field(default=None, description="Degree or certification title, e.g. 'Bachelor of Science in Computer Science'.")
     institution: Optional[str] = Field(default=None, description="School, university, or academy name.")
     graduation_year: Optional[str] = Field(default=None, description="Year of graduation or study period, e.g. '2020'.")
-
-# --- Document-Level Target Schemas ---
 
 class InvoiceSchema(BaseModel):
     vendor_name: ExtractedField[str] = Field(..., description="Name of the selling merchant or vendor.")

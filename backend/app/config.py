@@ -15,12 +15,10 @@ class Settings(BaseSettings):
         env_file = ".env"
         extra = "ignore"
 
-# Instantiate settings
 try:
     from typing import Optional
     settings = Settings()
 except Exception as e:
-    # Safe fallback if pydantic-settings throws errors
     class FallbackSettings:
         API_PROVIDER = os.getenv("API_PROVIDER", "gemini")
         GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")

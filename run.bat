@@ -5,7 +5,6 @@ echo       Starting Document Extraction Engine (ExEngine)
 echo =========================================================
 echo.
 
-:: Check python version
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo ERROR: Python is not installed or not in PATH. Please install Python.
@@ -13,7 +12,6 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-:: Create virtual env if not exists
 if not exist .venv (
     echo [1/3] Creating Python virtual environment venv...
     python -m venv .venv
@@ -21,20 +19,16 @@ if not exist .venv (
     echo [1/3] Virtual environment venv already exists.
 )
 
-:: Activate env and install requirements
 echo [2/3] Activating environment and installing/updating dependencies...
 call .venv\Scripts\activate
 python -m pip install --upgrade pip
 python -m pip install -r backend/requirements.txt
 
-:: Launch both servers in separate windows
 echo [3/3] Launching Backend and Frontend services...
 echo.
 
-:: Launch FastAPI backend
 start "ExEngine Backend API" cmd /k "call .venv\Scripts\activate && uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000"
 
-:: Launch React Frontend
 start "ExEngine Frontend App" cmd /k "cd frontend && npm run dev"
 
 echo =========================================================

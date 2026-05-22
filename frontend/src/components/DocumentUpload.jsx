@@ -61,8 +61,8 @@ const DocumentUpload = ({ onUpload, isProcessing }) => {
   return (
     <div className="upload-hero">
       <div className="hero-text">
-        <h1>Intelligent Document Extraction</h1>
-        <p>Upload invoices, resumes, or contract agreements to parse them into structured, validated JSON datasets instantly.</p>
+        <h1>Document Processing Portal</h1>
+        <p>Upload invoices, resumes, or contract agreements to parse and manage their fields.</p>
       </div>
 
       <div 
@@ -82,7 +82,7 @@ const DocumentUpload = ({ onUpload, isProcessing }) => {
         />
 
         <div className="upload-icon-wrapper">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
@@ -107,26 +107,26 @@ const DocumentUpload = ({ onUpload, isProcessing }) => {
           </div>
         ) : (
           <div style={{ pointerEvents: 'none' }}>
-            <p style={{ fontWeight: 600, fontSize: '16px', color: 'var(--text-primary)', marginBottom: '6px' }}>
+            <p style={{ fontWeight: 500, fontSize: '14px', color: 'var(--text-primary)', marginBottom: '6px' }}>
               Drag & drop document here, or click to browse
             </p>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
               Supports PDF, DOCX, Plain Text (TXT), PNG, and JPG up to 10MB
             </p>
           </div>
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', width: '600px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '16px', width: '500px', alignItems: 'center' }}>
         <select 
           className="doc-type-selector" 
           value={docType}
           onChange={(e) => setDocType(e.target.value)}
           disabled={isProcessing}
         >
-          <option value="invoice">📄 Document Type: Invoice Schema</option>
-          <option value="resume">👤 Document Type: Resume Schema</option>
-          <option value="contract">📜 Document Type: Contract Schema</option>
+          <option value="invoice">📄 Invoice Form</option>
+          <option value="resume">👤 Resume Profile</option>
+          <option value="contract">📜 Contract Agreement</option>
         </select>
 
         <button 
@@ -134,8 +134,8 @@ const DocumentUpload = ({ onUpload, isProcessing }) => {
           onClick={handleSubmit}
           disabled={!file || isProcessing}
         >
-          <span>Begin Extraction</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <span>Process File</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>
