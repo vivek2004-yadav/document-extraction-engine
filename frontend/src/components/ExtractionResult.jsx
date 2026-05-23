@@ -197,7 +197,7 @@ const ExtractionResult = ({ extraction, onSave }) => {
                 <div className="field-meta">
                   <span className="field-label">{key.replace(/_/g, " ")}</span>
                   <span className={`confidence-badge ${field.confidence || 'low'}`}>
-                    {field.confidence === 'high' ? 'Verified' : field.confidence === 'medium' ? 'Review' : 'Unverified'}
+                    {field.confidence === 'high' ? 'High' : field.confidence === 'medium' ? 'Medium' : 'Low'}
                   </span>
                 </div>
 
